@@ -10,4 +10,9 @@ Basing on the file `playbook.yaml` create your own playbook that will
 ansible-lint playbook.yaml
 ```
 
+to run playbook.yaml
+```
+ansible-playbook playbook.yaml
+```
+
 Find the propper modules from here https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#plugins-in-ansible-builtin
