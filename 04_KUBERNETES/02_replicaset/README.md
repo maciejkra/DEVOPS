@@ -7,6 +7,7 @@ kubectl get pod -o wide
 ```sh
 kubectl apply -f pod.yaml
 kubectl get pod -o wide
+kubectl get events
 ```
 
 # delete pod
