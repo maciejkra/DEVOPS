@@ -7,7 +7,7 @@ apt-get install --no-install-recommends -y python3 redis python3-pip uvicorn
 
 ### In the application dir
 ```sh
-pip3 install --no-cache-dir -r requirements.txt
+pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 ```
 
 ### To run the app
