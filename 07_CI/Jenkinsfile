@@ -10,18 +10,10 @@ pipeline {
 
     stages {
 
-        stage('Prepare Docker Context') {
-            steps {
-                dir('03_DOCKER/11_onbuild/') {
-                    sh 'docker build -t base-python:on-build Base'
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${REGISTRY}", "-f 03_DOCKER/11_onbuild/Dockerfile .")
+                    dockerImage = docker.build("${REGISTRY}", "-f 03_DOCKER/10_python/Dockerfile.solution .")
                 }
             }
         }
