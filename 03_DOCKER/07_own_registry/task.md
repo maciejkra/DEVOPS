@@ -1,7 +1,7 @@
 # Run registry container
 
 1. image name: `registry`
-2. image version: `2`
+2. image version: `3`
 3. forward port to `5000` port in registry
 
 # Curl should work
@@ -54,5 +54,4 @@ docker container start registry
 2. volume mount at: `/var/lib/registry`
 
 For more production case read:
-1. https://docs.docker.com/registry/deploying/
-2. https://docs.docker.com/registry/configuration/#letsencrypt
+1. https://distribution.github.io/distribution/

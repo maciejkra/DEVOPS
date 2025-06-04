@@ -1,7 +1,0 @@
-Flask
-six
-Werkzeug
-python-dateutil
-pytz
-numpy
-jsonpickle
