@@ -14,7 +14,7 @@ pipeline {
             steps {
                 dir('03_DOCKER/10_python/') {
                     script {
-                        dockerImage = docker.build("${REGISTRY}", "-f xDockerfile.solution .")
+                        dockerImage = docker.build("${REGISTRY}", "-f Dockerfile.solution .")
                     }
                 }
             }
