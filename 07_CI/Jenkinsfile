@@ -1,63 +1,87 @@
-pipeline {  
-    environment {
-        registry = "krajewskim/python"
-        registryCredential = 'dockerhub'
-        dockerImage = ''
-        KUBECTL_NAMESPACE="jenkins-deploy"
-        CI_APP_NAME="python-deployment"
-    } 
+pipeline {
     agent any
+
+    environment {
+        REGISTRY = "krajewskim/python"
+        REGISTRY_CREDENTIAL = 'dockerhub'
+        KUBECTL_NAMESPACE = "jenkins-deploy"
+        CI_APP_NAME = "python-deployment"
+    }
+
     stages {
-    stage('Building image') {
-      steps{
-        script {
-            dir('03_DOCKER/11_onbuild/') {
-                sh "docker image build -t base-python:on-build Base"
-                dockerImage = docker.build registry, '-f Dockerfile .'
+
+        stage('Prepare Docker Context') {
+            steps {
+                dir('03_DOCKER/11_onbuild/') {
+                    sh 'docker build -t base-python:on-build Base'
+                }
             }
         }
-      }
-    }
-    stage('Deploy Image') {
-      steps{    script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${REGISTRY}", "-f 03_DOCKER/11_onbuild/Dockerfile .")
+                }
+            }
         }
-      }
-    }
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $registry"
-      }
-    }
-    stage('Kuernetes Deploy') {
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', REGISTRY_CREDENTIAL) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Clean Up Local Docker Image') {
+            steps {
+                sh "docker rmi ${REGISTRY} || true"
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
             agent {
                 docker {
                     image 'krajewskim/kubectl'
                     args '-v /tmp:/tmp --entrypoint='
                 }
             }
-            steps{
-                withKubeConfig(credentialsId: 'docker-for-desktop', namespace: 'default') {
+            steps {
+                script {
+                    withKubeConfig(credentialsId: 'docker-for-desktop', namespace: "${KUBECTL_NAMESPACE}") {
 
-                        sh 'kubectl create namespace $KUBECTL_NAMESPACE -o yaml --dry-run=client | kubectl apply -f -'
-                        sh 'kubectl config set-context $(kubectl config current-context) --namespace=$KUBECTL_NAMESPACE'
+                        sh """
+                            kubectl create namespace ${KUBECTL_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
+                            kubectl config set-context \$(kubectl config current-context) --namespace=${KUBECTL_NAMESPACE}
+                        """
 
+                        sh 'kubeval --strict 04_KUBERNETES/04_service/solution/*'
 
-                        sh '''
-                            kubeval --strict 04_KUBERNETES/04_service/solution/*
-                            kubectl apply -f 04_KUBERNETES/04_service/solution/
-                            if ! kubectl rollout status deployment $CI_APP_NAME; then
-                                kubectl rollout undo deployment $CI_APP_NAME;
-                                kubectl rollout status deployment $CI_APP_NAME;
-                                exit 1;
-                            fi
-                            echo 'Rollout completed'
-                        '''
+                        try {
+                            sh 'kubectl apply -f 04_KUBERNETES/04_service/solution/'
+                            sh "kubectl rollout status deployment ${CI_APP_NAME} --timeout=60s"
+                            echo '✅ Rollout completed successfully.'
+                        } catch (err) {
+                            echo '❌ Rollout failed. Attempting rollback...'
+                            sh "kubectl rollout undo deployment ${CI_APP_NAME} || true"
+                            sh "kubectl rollout status deployment ${CI_APP_NAME}"
+                            error("Deployment failed and was rolled back.")
+                        }
                     }
-        
+                }
             }
         }
-  }
+    }
+
+    post {
+        failure {
+            echo '🚨 Pipeline failed. Please check logs.'
+        }
+        success {
+            echo '🎉 Pipeline completed successfully.'
+        }
+    }
 }

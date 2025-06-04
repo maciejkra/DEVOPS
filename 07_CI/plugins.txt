@@ -1,0 +1,9 @@
+workflow-aggregator
+docker-plugin
+docker-workflow
+kubernetes-cli
+git
+credentials
+blueocean
+pipeline-stage-view
+credentials-binding
