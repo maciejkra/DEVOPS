@@ -12,9 +12,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('03_DOCKER/11_onbuild/') {
+                dir('03_DOCKER/10_python/') {
                     script {
-                        dockerImage = docker.build("${REGISTRY}", "-f 03_DOCKER/10_python/Dockerfile.solution .")
+                        dockerImage = docker.build("${REGISTRY}", "-f xDockerfile.solution .")
                     }
                 }
             }
