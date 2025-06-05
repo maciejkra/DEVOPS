@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  ingressClassName: public
+  ingressClassName: nginx
   tls:
   - hosts:
     - demo.134.122.64.99.nip.io
