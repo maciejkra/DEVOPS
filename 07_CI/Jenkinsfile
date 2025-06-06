@@ -5,7 +5,7 @@ pipeline {
         REGISTRY = "krajewskim/python-api"
         KUBECTL_NAMESPACE = "jenkins-deploy"
         CI_APP_NAME = "python-deployment"
-        DOCKERHUB_CRED = credentials('dockerhub-credentials')
+        DOCKERHUB_CRED = credentials('dockerhub')
     }
 
     stages {
