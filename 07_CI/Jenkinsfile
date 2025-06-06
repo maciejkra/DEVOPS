@@ -3,18 +3,14 @@ pipeline {
 
     environment {
         REGISTRY = "krajewskim/python-api"
-        DOCKERHUB_CRED = 'dockerhub'
         KUBECTL_NAMESPACE = "jenkins-deploy"
         CI_APP_NAME = "python-deployment"
+        DOCKERHUB_CRED = credentials('dockerhub-credentials')
     }
 
     stages {
 
         stage('Build Docker Image') {
-            environment {
-                DOCKERHUB_USERNAME = credentials('dockerhub-username') // Dodaj w Jenkins jako Secret Text
-                DOCKERHUB_PASSWORD = credentials('dockerhub-password') // Dodaj w Jenkins jako Secret Text
-            }
             steps {
                 dir('03_DOCKER/10_python/') {
                     script {
