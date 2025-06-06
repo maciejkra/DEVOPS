@@ -14,17 +14,18 @@ pipeline {
             steps {
                 dir('03_DOCKER/10_python/') {
                     script {
-                        dockerImage = docker.build("${REGISTRY}", "-f Dockerfile.solution .")
-                    }
-                }
-            }
-        }
+                        // Enable experimental features (if needed)
+                        sh 'docker buildx create --use --name multiarch-builder || true'
 
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('', REGISTRY_CREDENTIAL) {
-                        dockerImage.push()
+                        // Build for multiple architectures
+                        sh """
+                            docker buildx build \
+                                --platform linux/amd64,linux/arm64 \
+                                -t ${REGISTRY}:latest \
+                                -f Dockerfile.solution \
+                                --push \
+                                .
+                        """
                     }
                 }
             }
