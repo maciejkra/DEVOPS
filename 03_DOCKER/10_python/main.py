@@ -64,7 +64,7 @@ def get_redis():
 
 @app.get("/", response_class=CustomJSONResponse)
 async def info():
-    return {"message": "Hello World", "hostname": hostname}
+    return {"message": "Hello Devops", "hostname": hostname}
 
 @app.get("/healthz", response_class=CustomJSONResponse)
 async def healthz():
