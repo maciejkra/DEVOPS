@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "krajewskim/python"
+        REGISTRY = "krajewskim/python-api"
         REGISTRY_CREDENTIAL = 'dockerhub'
         KUBECTL_NAMESPACE = "jenkins-deploy"
         CI_APP_NAME = "python-deployment"
