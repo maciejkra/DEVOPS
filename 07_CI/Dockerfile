@@ -3,7 +3,7 @@ FROM jenkins/jenkins:lts
 USER root
 
 # Instalacja docker CLI
-RUN apt-get update && apt-get install -y docker.io curl unzip
+RUN curl -fsSL https://get.docker.com | sh
 
 # Instalacja kubectl
 ENV KUBECTL_VERSION=v1.30.1
