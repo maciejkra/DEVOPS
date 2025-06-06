@@ -11,9 +11,15 @@ pipeline {
     stages {
 
         stage('Build Docker Image') {
+            environment {
+                DOCKERHUB_USERNAME = credentials('dockerhub-username') // Dodaj w Jenkins jako Secret Text
+                DOCKERHUB_PASSWORD = credentials('dockerhub-password') // Dodaj w Jenkins jako Secret Text
+            }
             steps {
                 dir('03_DOCKER/10_python/') {
                     script {
+                        // Logowanie do DockerHub
+                        sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
                         // Enable experimental features (if needed)
                         sh 'docker buildx create --use --name multiarch-builder || true'
 
