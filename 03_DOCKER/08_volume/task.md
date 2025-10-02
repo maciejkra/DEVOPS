@@ -1,27 +1,99 @@
-# Volumes
 
-## display volume
+# Task – Docker Volume
 
-`docker volume <?>`
+## Goal
 
-# Attach volume
+Learn how to use Docker volumes:
+- Mount a local directory from your host (bind mount)
+- Use named Docker volumes
+- Understand read-only (`:ro`) and read-write (`:rw`) mount options
 
-1. Build image from `01_volume_ls`
-2. Run container 
-3. `touch /tmp/something` on your hard drive
-3. Run container with `-v /tmp:/data <image_name> /data`
+---
 
-File something should be displayed
+## Part A: Bind Mount with Local Directory
 
-# Create volume and add :ro flag
+1. Build the image from the provided `01_volume_ls` directory:
 
-1. Create volume `<??> volume create my-volume`
-2. List new volume
-3. Run 2 containers (alpine for example; please remebmer to run them with `-it` flag)
+   ```bash
+   docker build -t 01_volume_ls 01_volume_ls
+   ```
 
-First with `-v my-volume:/data:ro`
-Second with `-v my-volume:/data`
+2. Run the container with the current directory mounted into `/data`:
 
-4. In second container create new file in `/data` folder
-5. Verify first container can read file
-6. Verify first container can't write file to `/data`
+
+     ```
+     docker run --rm -it -v "${PWD}:/data" 01_volume_ls
+     ```
+
+3. Create a file inside the mounted directory:
+
+   - On Linux/macOS:
+
+     ```bash
+     touch ./something.txt
+     ```
+
+   - On Windows (since `touch` may not be available):
+
+     ```powershell
+     echo Hello > something.txt
+     ```
+
+4. Check from inside the container that the file is visible in `/data`.
+
+     ```
+     docker run --rm -it -v "${PWD}:/data" 01_volume_ls /data
+     ```
+
+---
+
+## Part B: Named Volume with Read-Only and Read-Write
+
+1. Create a named Docker volume:
+
+   ```bash
+   docker volume create my-volume
+   ```
+
+2. Run two containers using the same volume:
+
+   - **Read-only container**:
+
+     ```bash
+     docker run -d --name ro-container -v my-volume:/data:ro my-nginx
+     ```
+
+   - **Read-write container**:
+
+     ```bash
+     docker run -d --name rw-container -v my-volume:/data my-nginx
+     ```
+
+3. From the `rw-container`, create a file:
+
+   ```bash
+   docker exec rw-container sh -c "echo 'Hello from RW' > /data/hello.txt"
+   ```
+
+4. From the `ro-container`, verify the file exists:
+
+   ```bash
+   docker exec ro-container ls /data
+   docker exec ro-container cat /data/hello.txt
+   ```
+
+5. Try creating a file in the `ro-container` (should fail):
+
+   ```bash
+   docker exec ro-container sh -c "echo 'nope' > /data/fail.txt"
+   ```
+
+   You should get a **permission denied** error, proving the volume is mounted read-only.
+
+---
+
+## Summary
+
+- Bind mounts link your local filesystem into the container — good for development.
+- Named volumes are managed by Docker and survive container deletion.
+- `:ro` protects data from being modified by the container.
