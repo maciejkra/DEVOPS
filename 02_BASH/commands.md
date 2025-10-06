@@ -3,6 +3,7 @@
 ```sh
 apt-get update
 apt-get install --no-install-recommends -y python3 redis python3-pip uvicorn
+apt-get remove -y python3-typing-extensions
 ```
 
 ### In the application dir
