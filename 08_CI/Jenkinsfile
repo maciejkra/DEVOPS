@@ -55,7 +55,7 @@ pipeline {
                             kubectl config set-context \$(kubectl config current-context) --namespace=${KUBECTL_NAMESPACE}
                         """
 
-                        sh 'kubeval --strict 05_KUBERNETES/04_service/solution/*'
+                        sh 'kubeconform -strict 05_KUBERNETES/04_service/solution/*'
 
                         try {
                             sh 'kubectl apply -f 05_KUBERNETES/04_service/solution/'

@@ -1,29 +1,61 @@
-version: '2'
-
 services:
 
-  elasticsearch:
-    image: amazon/opendistro-for-elasticsearch
+  # OpenSearch (nastepca Elasticsearcha; Amazon Open Distro jest zlikwidowany).
+  # Dla kursu wylaczamy plugin security (bez TLS/hasel) - prosciej na warsztacie.
+  opensearch:
+    image: opensearchproject/opensearch:3.6.0
     environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - 9200:9200
-    volumes:
-      - "./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -qE '\"status\":\"(green|yellow)\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
 
-  kibana:
-    image: amazon/opendistro-for-elasticsearch-kibana
-    ports:
-      - "5601:5601"
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:3.6.0
     environment:
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+      - 'OPENSEARCH_HOSTS=["http://opensearch:9200"]'
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    ports:
+      - 5601:5601
+    depends_on:
+      - opensearch
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat-oss:7.11.1
-    user: root
+  # Fluent Bit zastepuje Filebeat: Filebeat OSS nie laczy sie juz z OpenSearch 2.0+
+  # (mechanizm compatibility.override_main_response_version zostal usuniety).
+  # Fluent Bit ma natywny output "opensearch".
+  fluent-bit:
+    image: fluent/fluent-bit:5.0.6
+    ports:
+      - "24224:24224"
     volumes:
-      - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
-      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    depends_on:
+      opensearch:
+        condition: service_healthy
+
+  # Przykladowa aplikacja - logi ida przez docker logging driver "fluentd"
+  # do Fluent Bita (input forward na :24224), a stamtad do OpenSearcha.
+  app:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - fluent-bit
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: "127.0.0.1:24224"
+        fluentd-async: "true"
+        tag: "nginx"

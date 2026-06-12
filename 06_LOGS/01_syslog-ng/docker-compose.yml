@@ -3,8 +3,9 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-    depends_on: 
-      - syslog
+    depends_on:
+      syslog:
+        condition: service_healthy
     logging:
       driver: syslog
       options:
@@ -16,8 +17,9 @@ services:
     image: nginx:alpine
     ports:
       - "81:80"
-    depends_on: 
-      - syslog
+    depends_on:
+      syslog:
+        condition: service_healthy
     logging:
       driver: syslog
       options:
@@ -26,10 +28,11 @@ services:
         tag: "http2"
 
   syslog:
-    image: balabit/syslog-ng:latest
+    image: balabit/syslog-ng:4.11.0
     restart: always
-    ports: 
+    ports:
       - "5514:514"
     command: -F --no-caps
     volumes:
+      - "./syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf"
       - "./logs/:/var/log/syslogng/"

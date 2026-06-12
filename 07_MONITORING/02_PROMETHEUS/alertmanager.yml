@@ -1,9 +1,10 @@
 global:
-  slack_api_url: 'https://hooks.slack.com/services/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'
+  # Wstaw swój webhook ze Slacka (Incoming Webhooks). To jest placeholder.
+  slack_api_url: 'https://hooks.slack.com/services/TWOJ_WEBHOOK'
 
 route:
   receiver: 'slack-notifications'
-  group_by: [example, proxiaczki]
+  group_by: [alertname, job]
 
 receivers:
 - name: 'slack-notifications'

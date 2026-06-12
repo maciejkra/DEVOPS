@@ -1,26 +1,35 @@
-version: "3"
-
 services:
   loki:
-    image: grafana/loki:2.0.0
+    image: grafana/loki:3.7.2
     ports:
       - "3100:3100"
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
 
-
-  promtail:
-    image: grafana/promtail:2.0.0
-    volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers
-      - ./promtail-config.yaml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-
-
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    depends_on:
+      - loki
 
-
+  # Przykladowa aplikacja. Jej logi NIE sa zbierane przez agenta (Promtail), tylko
+  # wysylane wprost do Loki przez wbudowany docker logging driver "loki".
+  # Wymaga jednorazowej instalacji pluginu na hoscie (patrz Readme.md).
+  app:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - loki
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-retries: "5"
+        loki-batch-size: "400"

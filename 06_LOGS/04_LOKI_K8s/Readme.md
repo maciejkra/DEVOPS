@@ -1,31 +1,68 @@
-## Install Loki via Helm
+# Loki na Kubernetes (Helm)
 
+Chart `grafana/loki-stack` jest **deprecated** (oparty o Promtaila, ktory jest EOL).
+Skladamy aktualny zestaw:
 
-Add Loki’s Helm Chart repository:
+* **Loki** (chart `grafana/loki`, tryb SingleBinary) - przechowywanie logow,
+* **Grafana** (chart `grafana/grafana`) - podglad,
+* **k8s-monitoring** (chart `grafana/k8s-monitoring`) - kolektor logow oparty o
+  **Grafana Alloy** (nastepca Promtaila), rekomendowany przez Grafane sposob
+  zbierania telemetrii z Kubernetesa. Tutaj wlaczamy z niego TYLKO logi podow.
 
-```
+> Uwaga: `k8s-monitoring` to sam kolektor - wysyla do *destination*. Loki i Grafane
+> i tak instalujemy osobno (k8s-monitoring zastepuje samodzielny chart `alloy`).
+
+## 1. Repo Helm
+
+```sh
 helm repo add grafana https://grafana.github.io/helm-charts
-```
-
-Run the following command to update the repository:
-
-```
 helm repo update
 ```
 
-Deploy the Loki stack:
-```
-helm upgrade --install loki grafana/loki-stack --namespace=loki --set grafana.enabled=true --create-namespace
-```
-This will install Loki, Grafana and Promtail into your Kubernetes cluster.
+## 2. Loki (SingleBinary)
 
-Retrieve the password to log into Grafana:
+```sh
+helm upgrade --install loki grafana/loki \
+  --namespace loki --create-namespace \
+  -f loki-values.yaml
 ```
-kubectl get secret loki-grafana --namespace=loki -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-```
-The generated admin password will look like this one -> `jvjqUy2nhsHplVwrX8V05UgSDYEDz6pSiBZOCPHf`
 
-Finally, execute the command below to access the Grafana UI.
+## 3. Grafana
+
+```sh
+helm upgrade --install grafana grafana/grafana --namespace loki
 ```
-kubectl port-forward --namespace loki service/loki-grafana 3000:80
+
+## 4. k8s-monitoring (Alloy -> Loki)
+
+```sh
+helm upgrade --install k8s-monitoring grafana/k8s-monitoring \
+  --namespace loki \
+  -f k8s-monitoring-values.yaml
+```
+
+## 5. Podglad
+
+Haslo admina Grafany:
+
+```sh
+kubectl get secret -n loki grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+```sh
+kubectl port-forward -n loki svc/grafana 3000:80
+```
+
+W Grafanie dodaj **Data source -> Loki** z URL
+`http://loki.loki.svc.cluster.local:3100`, potem **Explore** i np.:
+
+```logql
+{cluster="docker-desktop"}      # albo zawez do namespace, np. {namespace="loki"}
+```
+
+## Sprzatanie
+
+```sh
+helm uninstall k8s-monitoring grafana loki -n loki
+kubectl delete namespace loki
 ```
