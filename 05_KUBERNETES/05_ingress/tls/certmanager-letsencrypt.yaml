@@ -1,0 +1,65 @@
+# cert-manager + Let's Encrypt — sciezka PRODUKCYJNA (NIE zadziala z localhost).
+#
+# HTTP-01 challenge wymaga, zeby Let's Encrypt dosiegnal http://<dnsName>/.well-known/...
+# od strony internetu — czyli potrzebny PUBLICZNY IP i domena nan wskazujaca
+# (np. app.<TWOJ-PUBLICZNY-IP>.nip.io). Z 127.0.0.1 to sie nie uda — lokalnie
+# uzywaj tls/certmanager-selfsigned.yaml.
+#
+# Dodatkowo dla Gateway API cert-manager musi miec wlaczony gateway-shim
+# (solver tworzy HTTPRoute). Patrz ../README.md -> sekcja TLS (jak wlaczyc bez Helma).
+#
+# Staging (fake CA "Pretend Pear X1") — uzywaj do iteracji, nie ma rate-limitow.
+# Prod — DOPIERO gdy staging dziala (LE prod: 50 cert/tydzien/domena).
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: maciejkra@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: training-gateway
+                namespace: default
+                kind: Gateway
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-tls
+  namespace: default
+spec:
+  secretName: app-tls
+  privateKey:
+    rotationPolicy: Always       # od cert-manager v1.18 to nowy default — ustawiamy jawnie, by wyciszyc warning
+  issuerRef:
+    name: letsencrypt-prod     # zacznij od staging; na prod przelacz po sukcesie
+    kind: ClusterIssuer
+  dnsNames:
+    - app.67.207.74.116.nip.io   # musi wskazywac na Twoj publiczny IP
+  duration: 2160h               # 90 dni
+  renewBefore: 360h             # odnowienie 15 dni przed wygasnieciem
+---
+# WAZNE — sam cert nie wystarczy, zeby cos sie wyswietlilo po HTTPS.
+# Lokalne HTTPRoute'y (demo/nginx/echo) sa na hostname `127-0-0-1`, wiec NIE zlapia
+# domeny z publicznym IP. Do realnego serwowania appki po TLS potrzebujesz HTTPRoute
+# z TA SAMA domena co w certyfikacie wyzej. Odkomentuj i wstaw swoj publiczny IP:
+#
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: HTTPRoute
+# metadata:
+#   name: app-public
+# spec:
+#   parentRefs:
+#     - name: training-gateway
+#   hostnames:
+#     - app.67.207.74.116.nip.io   # = dnsNames z Certificate
+#   rules:
+#     - backendRefs:
+#         - name: demo-app
+#           port: 80

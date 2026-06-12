@@ -1,0 +1,20 @@
+# grafana/k8s-monitoring - kolektor Alloy zarzadzany przez Alloy Operator.
+# Tutaj minimalnie: TYLKO logi podow -> Loki (reszta funkcji domyslnie wylaczona).
+cluster:
+  name: docker-desktop
+
+# Gdzie wysylac. Nasz Loki ma auth_enabled=false, wiec bez auth.
+destinations:
+  loki:
+    type: loki
+    url: http://loki.loki.svc.cluster.local:3100/loki/api/v1/push
+
+# Jedyna wlaczona funkcja: zbieranie logow podow w formacie Loki.
+podLogsViaLoki:
+  enabled: true
+  collector: alloy-logs
+
+# Kolektor: Alloy jako DaemonSet czytajacy logi z filesystemu node'a.
+collectors:
+  alloy-logs:
+    presets: [filesystem-log-reader, daemonset]

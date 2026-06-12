@@ -1,0 +1,14 @@
+# Catch-all route do sanity checku: bez `hostnames`, wiec lapie kazdy naglowek Host
+# (tez gole http://localhost/). Kieruje wszystko do demo-app (nginx).
+# Bardziej specyficzne route'y (fanout/host) wygrywaja z nim dla swoich domen.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: welcome
+spec:
+  parentRefs:
+    - name: training-gateway
+  rules:
+    - backendRefs:
+        - name: demo-app
+          port: 80

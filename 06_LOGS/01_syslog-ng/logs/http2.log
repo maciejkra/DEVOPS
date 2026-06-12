@@ -1,0 +1,38 @@
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+Jun  2 17:47:31 172.19.0.1 http2[330]: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+Jun  2 17:47:31 172.19.0.1 http2[330]: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+Jun  2 17:47:31 172.19.0.1 http2[330]: /docker-entrypoint.sh: Configuration complete; ready for start up
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: using the "epoll" event method
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: nginx/1.31.1
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: OS: Linux 6.12.76-linuxkit
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker processes
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 30
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 31
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 32
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 33
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 34
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 35
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 36
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 37
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 38
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 39
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 40
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 41
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 42
+Jun  2 17:47:31 172.19.0.1 http2[330]: 2026/06/02 17:47:31 [notice] 1#1: start worker process 43
+Jun  2 17:47:44 172.19.0.1 http2[330]: 192.168.65.1 - - [02/Jun/2026:17:47:44 +0000] "GET / HTTP/1.1" 200 896 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Safari/605.1.15" "-"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 192.168.65.1 - - [02/Jun/2026:17:47:44 +0000] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 153 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Safari" "-"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 2026/06/02 17:47:44 [error] 30#30: *2 open() "/usr/share/nginx/html/apple-touch-icon-precomposed.png" failed (2: No such file or directory), client: 192.168.65.1, server: localhost, request: "GET /apple-touch-icon-precomposed.png HTTP/1.1", host: "127.0.0.1:81"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 2026/06/02 17:47:44 [error] 31#31: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 192.168.65.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:81", referrer: "http://127.0.0.1:81/"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 192.168.65.1 - - [02/Jun/2026:17:47:44 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "http://127.0.0.1:81/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Safari/605.1.15" "-"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 192.168.65.1 - - [02/Jun/2026:17:47:44 +0000] "GET /apple-touch-icon.png HTTP/1.1" 404 153 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Safari" "-"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 2026/06/02 17:47:44 [error] 30#30: *2 open() "/usr/share/nginx/html/apple-touch-icon.png" failed (2: No such file or directory), client: 192.168.65.1, server: localhost, request: "GET /apple-touch-icon.png HTTP/1.1", host: "127.0.0.1:81"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 192.168.65.1 - - [02/Jun/2026:17:47:44 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Safari" "-"
+Jun  2 17:47:44 172.19.0.1 http2[330]: 2026/06/02 17:47:44 [error] 30#30: *2 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 192.168.65.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:81"
