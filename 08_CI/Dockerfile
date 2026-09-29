@@ -10,12 +10,12 @@ ARG TARGETARCH
 RUN curl -fsSL https://get.docker.com | sh
 
 # Instalacja kubectl
-ENV KUBECTL_VERSION=v1.34.1
+ENV KUBECTL_VERSION=v1.37.1
 RUN curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl" && \
     chmod +x kubectl && mv kubectl /usr/local/bin/kubectl
 
 # Instalacja kubeconform (nastepca kubeval - kubeval jest archived/nieutrzymywany)
-RUN curl -sSL "https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-${TARGETARCH}.tar.gz" | tar xz && \
+RUN curl -sSL "https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-${TARGETARCH}.tar.gz" | tar xz && \
     mv kubeconform /usr/local/bin/ && rm -f kubeconform-linux-${TARGETARCH}.tar.gz
 
 # Instalacja pluginów z listy
