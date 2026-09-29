@@ -8,8 +8,11 @@
 # Dodatkowo dla Gateway API cert-manager musi miec wlaczony gateway-shim
 # (solver tworzy HTTPRoute). Patrz ../README.md -> sekcja TLS (jak wlaczyc bez Helma).
 #
-# Staging (fake CA "Pretend Pear X1") — uzywaj do iteracji, nie ma rate-limitow.
-# Prod — DOPIERO gdy staging dziala (LE prod: 50 cert/tydzien/domena).
+# UWAGA — ponizej jest PLACEHOLDER <GATEWAY-IP> (dwa miejsca). Podmien go na adres SWOJEGO
+# Gatewaya, inaczej LE bedzie walidowac cudzy host. Gotowy przepis: ../README.md (Przyklad 4C).
+#
+# Uzywamy od razu prod — chcemy zaufany cert (zielona klodka, curl bez -k). Cena: limit LE
+# to 5 NIEUDANYCH walidacji na godzine na hostname, wiec najpierw pre-flight z README (4C).
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -38,28 +41,29 @@ spec:
   privateKey:
     rotationPolicy: Always       # od cert-manager v1.18 to nowy default — ustawiamy jawnie, by wyciszyc warning
   issuerRef:
-    name: letsencrypt-prod     # zacznij od staging; na prod przelacz po sukcesie
+    name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - app.67.207.74.116.nip.io   # musi wskazywac na Twoj publiczny IP
+    - app.<GATEWAY-IP>.nip.io    # musi wskazywac na Twoj publiczny IP
   duration: 2160h               # 90 dni
   renewBefore: 360h             # odnowienie 15 dni przed wygasnieciem
+
 ---
 # WAZNE — sam cert nie wystarczy, zeby cos sie wyswietlilo po HTTPS.
 # Lokalne HTTPRoute'y (demo/nginx/echo) sa na hostname `127-0-0-1`, wiec NIE zlapia
 # domeny z publicznym IP. Do realnego serwowania appki po TLS potrzebujesz HTTPRoute
-# z TA SAMA domena co w certyfikacie wyzej. Odkomentuj i wstaw swoj publiczny IP:
-#
-# apiVersion: gateway.networking.k8s.io/v1
-# kind: HTTPRoute
-# metadata:
-#   name: app-public
-# spec:
-#   parentRefs:
-#     - name: training-gateway
-#   hostnames:
-#     - app.67.207.74.116.nip.io   # = dnsNames z Certificate
-#   rules:
-#     - backendRefs:
-#         - name: demo-app
-#           port: 80
+# z TA SAMA domena co w certyfikacie wyzej:
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app-public
+  namespace: default
+spec:
+  parentRefs:
+    - name: training-gateway
+  hostnames:
+    - app.<GATEWAY-IP>.nip.io   # = dnsNames z Certificate
+  rules:
+    - backendRefs:
+        - name: demo-app        # nginx z backends.yaml
+          port: 80

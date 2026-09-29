@@ -44,3 +44,7 @@ nie Ty openssl-em. To jest sedno cert-managera: produkcja i renewal certow.
 
 `certmanager-letsencrypt.yaml` — wymaga publicznego IP (HTTP-01). Szczegoly i ograniczenia
 w komentarzu w tym pliku oraz w `../README.md`. Lokalnie zostan przy wariancie A lub B.
+
+Przetestowany przepis na klaster w chmurze (DigitalOcean/DOKS) — wraz z pulapkami instalacji
+Envoy Gateway na klastrze zarzadzanym — jest w `../README.md` (Krok 1, sekcja DOKS
+oraz Przyklad 4C).

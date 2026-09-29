@@ -5,12 +5,9 @@ Skladamy aktualny zestaw:
 
 * **Loki** (chart `grafana/loki`, tryb SingleBinary) - przechowywanie logow,
 * **Grafana** (chart `grafana/grafana`) - podglad,
-* **k8s-monitoring** (chart `grafana/k8s-monitoring`) - kolektor logow oparty o
-  **Grafana Alloy** (nastepca Promtaila), rekomendowany przez Grafane sposob
-  zbierania telemetrii z Kubernetesa. Tutaj wlaczamy z niego TYLKO logi podow.
-
-> Uwaga: `k8s-monitoring` to sam kolektor - wysyla do *destination*. Loki i Grafane
-> i tak instalujemy osobno (k8s-monitoring zastepuje samodzielny chart `alloy`).
+* **Alloy** (chart `grafana/alloy`) - kolektor logow **Grafana Alloy** (nastepca
+  Promtaila), rekomendowany przez Grafane. Config w `alloy-values.yaml`: zbiera
+  logi podow przez API Kubernetesa (`loki.source.kubernetes`) i wysyla do Loki.
 
 ## 1. Repo Helm
 
@@ -33,12 +30,10 @@ helm upgrade --install loki grafana/loki \
 helm upgrade --install grafana grafana/grafana --namespace loki
 ```
 
-## 4. k8s-monitoring (Alloy -> Loki)
+## 4. Alloy (-> Loki)
 
 ```sh
-helm upgrade --install k8s-monitoring grafana/k8s-monitoring \
-  --namespace loki \
-  -f k8s-monitoring-values.yaml
+helm upgrade --install alloy grafana/alloy --namespace loki -f alloy-values.yaml
 ```
 
 ## 5. Podglad
@@ -57,12 +52,12 @@ W Grafanie dodaj **Data source -> Loki** z URL
 `http://loki.loki.svc.cluster.local:3100`, potem **Explore** i np.:
 
 ```logql
-{cluster="docker-desktop"}      # albo zawez do namespace, np. {namespace="loki"}
+{namespace="loki"}      # Alloy ustawia etykiety namespace / pod / container
 ```
 
 ## Sprzatanie
 
 ```sh
-helm uninstall k8s-monitoring grafana loki -n loki
+helm uninstall alloy grafana loki -n loki
 kubectl delete namespace loki
 ```

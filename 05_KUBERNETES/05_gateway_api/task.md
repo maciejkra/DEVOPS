@@ -1,6 +1,6 @@
 # Zadanie — Gateway API: wystaw aplikacje python
 
-Cel: caly ruch dla hosta **`api.127.0.0.1.nip.io`** skierowac przez Gateway API
+Cel: caly ruch dla hosta **`api.127-0-0-1.nip.io`** skierowac przez Gateway API
 do aplikacji **python** z kursu (`python-service`, port `5002`).
 
 ## Przygotowanie
@@ -18,11 +18,11 @@ do aplikacji **python** z kursu (`python-service`, port `5002`).
 
 ## Zadanie
 
-Napisz **HTTPRoute**, ktory CALY ruch dla hosta `api.127.0.0.1.nip.io` skieruje do
+Napisz **HTTPRoute**, ktory CALY ruch dla hosta `api.127-0-0-1.nip.io` skieruje do
 `python-service` na porcie `5002`. Podpowiedzi:
 
 - `parentRefs` → `training-gateway`
-- `hostnames` → `api.127.0.0.1.nip.io`
+- `hostnames` → `api.127-0-0-1.nip.io`
 - regula bez `matches` (albo z `PathPrefix: /`) = lapie caly ruch hosta
 - `backendRefs` → `python-service`, `port: 5002`
 
@@ -34,7 +34,7 @@ kubectl apply -f <twoj-plik>.yaml
 ## Weryfikacja
 
 ```sh
-curl http://api.127.0.0.1.nip.io/
+curl http://api.127-0-0-1.nip.io/
 ```
 Powinienes dostac odpowiedz z aplikacji python (nie ze strony nginx).
 

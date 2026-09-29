@@ -16,7 +16,7 @@ services:
       - back-tier
 
   lb:
-    image: traefik:2.10
+    image: traefik:v3.7
     command: --providers.docker --entrypoints.web.address=:80 --providers.docker.exposedbydefault=false
     ports:
       - 80:80

@@ -1,18 +1,33 @@
 # Docker Compose Demo
 
-This demo using docker-compose to bring up a complete stack with the demo app, including Grafana, Prometheus, Loki and Tempo.
-The datasources and cross-datasource links should all be configured correctly.
+Demo stawia docker-compose'em kompletny stack z przykladowa aplikacja (TNS):
+Grafana, Prometheus, Loki i Tempo. Datasource'y i linki miedzy nimi
+(logi <-> trace'y <-> metryki) sa juz skonfigurowane przez provisioning.
 
-To run:
+## 1. Zainstaluj plugin Loki (jednorazowo na hoscie)
 
-```shell
-$ docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-$ docker compose up -d
+Tag pluginu jest per-architektura. Wybierz wg swojego procesora:
+
+```sh
+# Apple Silicon (M1/M2/M3...) / ARM:
+docker plugin install grafana/loki-docker-driver:3.7.8-arm64 --alias loki --grant-all-permissions
+
+# Intel/AMD (x86_64):
+docker plugin install grafana/loki-docker-driver:3.7.8-amd64 --alias loki --grant-all-permissions
+
+docker plugin ls   # powinno pokazac "loki ... ENABLED true"
 ```
 
-The navigate to http://localhost:3000 to see Grafana.
+## 2. Odpal stack
 
-## Fancy Query
+```sh
+docker compose up -d
+```
+
+Potem wejdz na http://localhost:3000, zeby zobaczyc Grafane.
+
+## Ciekawe zapytanie
+
 ```
 {job="tns/app"} | logfmt | status>=500 and status <=599 and duration > 50ms
 ```

@@ -1,6 +1,6 @@
 services:
   loki:
-    image: grafana/loki:3.7.2
+    image: grafana/loki:3.7.8
     ports:
       - "3100:3100"
     volumes:
@@ -8,13 +8,15 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.2.3
     ports:
       - "3000:3000"
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     depends_on:
       - loki
 
