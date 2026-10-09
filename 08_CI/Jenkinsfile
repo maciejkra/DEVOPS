@@ -59,6 +59,7 @@ pipeline {
 
                         try {
                             sh 'kubectl apply -f 05_KUBERNETES/04_service/solution/'
+                            sh "kubectl rollout restart deployment ${CI_APP_NAME}"
                             sh "kubectl rollout status deployment ${CI_APP_NAME} --timeout=60s"
                             echo '✅ Rollout completed successfully.'
                         } catch (err) {
