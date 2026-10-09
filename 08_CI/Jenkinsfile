@@ -12,7 +12,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('03_DOCKER/10_python/') {
+                dir('04_DOCKER/10_python/') {
                     script {
                         // Logowanie do DockerHub
                         sh 'echo "$DOCKERHUB_CRED_PSW" | docker login -u "$DOCKERHUB_CRED_USR" --password-stdin'
